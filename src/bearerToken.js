@@ -1,15 +1,16 @@
-const {API_TOKEN} = require('./config')
-const logger = require('./logger')
+const { API_TOKEN } = require('./config');
+const logger = require('./logger');
 
-function validateToken(req, res, next){
-    const apiKey = API_TOKEN;
-    const authToken = req.get('Authorized')
+function validateBearerToken(req, res, next) {
+  const apiToken = API_TOKEN;
+  const authToken = req.get('Authorization');
 
-    if(!authToken || authToken.split(' ')[1] !== apiKey){
-        logger.error(`Request Unauthorized to path ${req.path}`);
-        return res.status(401).json({ error: 'Unauthorized'})
-    }
-    next()
+  if (!authToken || authToken.split(' ')[1] !== apiToken) {
+    logger.error(`Unathorized request to path: ${req.path}`);
+    return res.status(401).json({ error: 'Unauthorized request' });
+  }
+  // move to the next middleware
+  next();
 }
 
-module.exports = validateToken;
+module.exports = validateBearerToken;

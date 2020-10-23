@@ -1,15 +1,18 @@
-const { NODE_ENV } = require('./config')
-const logger = require('./logger')
+'use strict';
 
-function errorHandler(error, req, res, next) {
-    let response;
-    if (process.env.NODE_ENV === "production") {
-      response = { error: { message: "server error" } };
-    } else {
-      console.error(error);
-      response = { message: error.message, error };
-    }
-    res.status(500).json(response);
-};
+const { NODE_ENV } = require('./config');
+const logger = require('./logger');
 
-module.exports = errorHandler
+function errorHandler(error, req, res) {
+  let response;
+  if (NODE_ENV === 'production') {
+    response = { error: { message: 'server error' } };
+  } else {
+    console.error(error);
+    logger.error(error.message);
+    response = { message: error.message, error };
+  }
+  res.status(500).json(response);
+}
+
+module.exports = errorHandler;
