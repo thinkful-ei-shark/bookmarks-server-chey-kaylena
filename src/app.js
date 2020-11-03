@@ -1,29 +1,35 @@
-/* eslint-disable quotes */
-// Imports
-'use strict';
-
+//  Imports
 require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
-const bearerToken = require('./bearerToken');
-const app = express();
+const bearerToken = require('./validateBearerToken');
 const errorHandler = require('./errorHandler');
-const bookmarksRouter = require('./bookmarksRouter');
-const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
+const BookmarksRouter = require('./bookmarks/BookmarksRouter');
+const app = express();
+
+app.use(
+  morgan(NODE_ENV === 'production' ? 'tiny' : 'common', {
+    skip: () => NODE_ENV === 'test',
+  })
+);
 
 // USE
-
-app.use(morgan(morganOption));
-app.use(helmet());
 app.use(cors());
+app.use(helmet());
 app.use(bearerToken);
-app.use(bookmarksRouter);
+app.use(BookmarksRouter);
+
+app.use(
+  morgan(NODE_ENV === 'production' ? 'tiny' : 'common', {
+    skip: () => NODE_ENV === 'test',
+  })
+);
 
 app.get('/', (req, res) => {
-  res.send("Hello, world!");
+  res.send('Hello, world!');
 });
 
 app.use(errorHandler);
